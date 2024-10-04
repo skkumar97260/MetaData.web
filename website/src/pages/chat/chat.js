@@ -400,7 +400,7 @@ const Chat = () => {
       </div>
 
       {/* Chat Messages */}
-      <div className="shadow-2xl flex flex-col gap-5 bg-gradient-to-r from-white to-blue-500 border border-gray-300 h-[50vh] sm:h-[55vh] bg-white mt-2 overflow-hidden overflow-y-scroll p-5">
+      <div className="shadow-2xl flex flex-col gap-5 bg-gradient-to-r from-white to-blue-500 border border-gray-300 h-[50vh] sm:h-[55vh] bg-white mt-2 overflow-hidden overflow-y-scroll p-5" ref={messagesContainerRef2}>
       {chatmessages.map((message, index) => (
         <div
           key={index}
