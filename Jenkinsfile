@@ -91,8 +91,8 @@ pipeline {
                             kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/hpa.yaml
 
                             # Restart deployments to ensure the new images are being used
-                            kubectl rollout restart deployment/frontend-app -n ${KUBERNETES_NAMESPACE}
-                            kubectl rollout restart deployment/backend-app -n ${KUBERNETES_NAMESPACE}
+                            kubectl rollout restart deployment/frontend -n ${KUBERNETES_NAMESPACE}
+                            kubectl rollout restart deployment/backend -n ${KUBERNETES_NAMESPACE}
                         '''
                     }
                 }
