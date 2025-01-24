@@ -1,49 +1,117 @@
 pipeline {
     agent any
+                            
+    tools {
+        nodejs "nodejs" // Ensure Node.js is configured in Jenkins
+    }
+
+    environment {
+      
+        FRONTEND_IMAGE = "skkumar97260/sk-frontend"
+        BACKEND_IMAGE = "skkumar97260/sk-backend"
+        DOCKER_TAG = "latest"
+        AWS_CLUSTER_NAME = "my-eks-cluster1"
+        AWS_REGION = "us-east-1"
+        KUBERNETES_NAMESPACE = "mern-namespace"
+    }
+
     stages {
-        stage('Checkout') {
+        stage('GitHub Pull') {
             steps {
-                git 'https://github.com/your-repo/mern-project.git'
+                checkout scmGit(
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[
+                        credentialsId: 'GITHUB_CREDENTIALS',
+                        url: 'https://github.com/skkumar97260/deploy-demo.git'
+                    ]]
+                )
             }
         }
-        stage('Build Frontend') {
+
+        // stage('Install Dependencies') {
+        //     steps {
+        //         script {
+        //             if (fileExists('package.json')) {
+        //                 sh 'npm install'
+        //             } else {
+        //                 error "Missing package.json in the root directory"
+        //             }
+        //         }
+        //     }
+        // }
+
+        // stage('Build Docker Image') {
+        //     steps {
+        //         sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+        //     }
+        // }
+        stage('Build Frontend Image') {
             steps {
-                dir('frontend') {
-                    script {
-                        sh 'docker build -t frontend-app .'
-                    }
+                sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} ."
+        }
+
+        stage('Build Backend Image') {
+            steps {
+                sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} ."
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-credentials',
+                    usernameVariable: 'DOCKER_USERNAME',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    sh '''
+                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                        docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    '''
                 }
             }
         }
-        stage('Build Backend') {
-            steps {
-                dir('backend') {
-                    script {
-                        sh 'docker build -t backend-app .'
-                    }
-                }
-            }
-        }
-        stage('Push to Docker Hub') {
-            environment {
-                DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
-            }
-            steps {
-                script {
-                    sh 'docker login -u $DOCKER_HUB_CREDENTIALS_USR -p $DOCKER_HUB_CREDENTIALS_PSW'
-                    sh 'docker tag frontend-app your-dockerhub-username/frontend-app'
-                    sh 'docker push your-dockerhub-username/frontend-app'
-                    sh 'docker tag backend-app your-dockerhub-username/backend-app'
-                    sh 'docker push your-dockerhub-username/backend-app'
-                }
-            }
-        }
+
         stage('Deploy to Kubernetes') {
             steps {
-                script {
-                    kubernetesDeploy(configs: 'k8s/*.yaml')
+                withCredentials([ 
+                    string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    sh '''
+                        export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                        export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+
+                        aws eks update-kubeconfig --region ${AWS_REGION} --name ${AWS_CLUSTER_NAME}
+
+                        echo "Creating Kubernetes namespace..."
+                        kubectl create namespace ${KUBERNETES_NAMESPACE} || true
+
+                        echo "Applying Kubernetes manifests..."
+                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-deployment.yaml
+                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-deployment.yaml
+                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-service.yaml
+                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-service.yaml
+                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/ingress.yaml
+                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/hpa.yaml
+
+                        echo "Waiting for deployment to complete..."
+                        kubectl rollout restart deployment/nodejs-app -n ${KUBERNETES_NAMESPACE}
+                    '''
                 }
             }
         }
+    }
+
+    post {
+        always {
+            echo 'Pipeline execution finished.'
+        }
+        success {
+            echo 'Pipeline executed successfully.'
+        }
+        failure {
+            echo 'Pipeline execution failed.'
+        }
+    }
+}
     }
 }
