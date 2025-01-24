@@ -27,20 +27,11 @@ pipeline {
             }
         }
 
-        stage('Verify Repository Checkout') {
-            steps {
-                script {
-                    sh 'ls -l' // List files in the root directory to confirm 'panel' and 'backend' exist
-                }
-            }
-        }
-
         stage('Build Frontend Image') {
             steps {
                 script {
-                    // Build the Docker image for the frontend located in the 'panel' directory
                     echo "Building Frontend Docker Image..."
-                    sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -f panel/Dockerfile panel"
+                    sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -f website/Dockerfile website"
                 }
             }
         }
@@ -48,7 +39,6 @@ pipeline {
         stage('Build Backend Image') {
             steps {
                 script {
-                    // Build the Docker image for the backend located in the 'backend' directory
                     echo "Building Backend Docker Image..."
                     sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} -f backend/Dockerfile backend"
                 }
