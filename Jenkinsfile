@@ -27,23 +27,23 @@ pipeline {
             }
         }
 
-        stage('Build Frontend Image') {
-            steps {
-                script {
-                    // Build the Docker image for the frontend located in panel/
-                    sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -f panel/Dockerfile ."
-                }
-            }
+       stage('Build Frontend Image') {
+    steps {
+        script {
+            // Build the Docker image for the frontend located in the 'panel' directory
+            sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -f ./panel/Dockerfile ./panel"
         }
+    }
+}
 
-        stage('Build Backend Image') {
-            steps {
-                script {
-                    // Build the Docker image for the backend located in backend/
-                    sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} -f backend/Dockerfile ."
-                }
-            }
+stage('Build Backend Image') {
+    steps {
+        script {
+            // Build the Docker image for the backend located in the 'backend' directory
+            sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} -f ./backend/Dockerfile ./backend"
         }
+    }
+}
 
         stage('Push Docker Images') {
             steps {
