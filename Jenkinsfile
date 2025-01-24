@@ -29,13 +29,19 @@ pipeline {
 
         stage('Build Frontend Image') {
             steps {
-                sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} ."
+                script {
+                    // Build the Docker image for the frontend located in panel/
+                    sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -f panel/Dockerfile ."
+                }
             }
         }
 
         stage('Build Backend Image') {
             steps {
-                sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} ."
+                script {
+                    // Build the Docker image for the backend located in backend/
+                    sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} -f backend/Dockerfile ."
+                }
             }
         }
 
@@ -71,6 +77,8 @@ pipeline {
                         kubectl create namespace ${KUBERNETES_NAMESPACE} || true
 
                         echo "Applying Kubernetes manifests..."
+
+                        # Apply the Kubernetes manifests with the correct namespace
                         kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-deployment.yaml
                         kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-deployment.yaml
                         kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-service.yaml
