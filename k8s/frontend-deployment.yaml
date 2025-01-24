@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: frontend-namespace
+  namespace: mern-namespace
   labels:
     app: frontend
 spec:
