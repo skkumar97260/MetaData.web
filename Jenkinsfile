@@ -1,12 +1,11 @@
 pipeline {
     agent any
-                                 
+                             
     tools {
         nodejs "nodejs" // Ensure Node.js is configured in Jenkins
     }
-    
+
     environment {
-      
         FRONTEND_IMAGE = "skkumar97260/sk-frontend"
         BACKEND_IMAGE = "skkumar97260/sk-backend"
         DOCKER_TAG = "latest"
@@ -28,34 +27,19 @@ pipeline {
             }
         }
 
-        // stage('Install Dependencies') {
-        //     steps {
-        //         script {
-        //             if (fileExists('package.json')) {
-        //                 sh 'npm install'
-        //             } else {
-        //                 error "Missing package.json in the root directory"
-        //             }
-        //         }
-        //     }
-        // }
-
-        // stage('Build Docker Image') {
-        //     steps {
-        //         sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
-        //     }
-        // }
         stage('Build Frontend Image') {
             steps {
-                sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} ."
+                sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} ./frontend"
+            }
         }
 
         stage('Build Backend Image') {
             steps {
-                sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} ."
+                sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} ./backend"
+            }
         }
 
-        stage('Push Docker Image') {
+        stage('Push Docker Images') {
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-credentials',
@@ -64,7 +48,8 @@ pipeline {
                 )]) {
                     sh '''
                         echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                        docker push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        docker push ${FRONTEND_IMAGE}:${DOCKER_TAG}
+                        docker push ${BACKEND_IMAGE}:${DOCKER_TAG}
                     '''
                 }
             }
@@ -94,7 +79,8 @@ pipeline {
                         kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/hpa.yaml
 
                         echo "Waiting for deployment to complete..."
-                        kubectl rollout restart deployment/nodejs-app -n ${KUBERNETES_NAMESPACE}
+                        kubectl rollout restart deployment/frontend-app -n ${KUBERNETES_NAMESPACE}
+                        kubectl rollout restart deployment/backend-app -n ${KUBERNETES_NAMESPACE}
                     '''
                 }
             }
@@ -111,7 +97,5 @@ pipeline {
         failure {
             echo 'Pipeline execution failed.'
         }
-    }
-}
     }
 }
