@@ -10,7 +10,7 @@ pipeline {
         FRONTEND_IMAGE = "skkumar97260/sk-frontend"
         BACKEND_IMAGE = "skkumar97260/sk-backend"
         DOCKER_TAG = "latest"
-        AWS_CLUSTER_NAME = "my-eks-cluster1"
+        AWS_CLUSTER_NAME = "my-eks-cluster-1"
         AWS_REGION = "us-east-1"
         KUBERNETES_NAMESPACE = "mern-namespace"
     }
