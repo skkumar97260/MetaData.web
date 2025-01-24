@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: frontend
   namespace: mern-namespace
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: "nlb" 
 spec:
   selector:
     app: frontend
@@ -10,4 +12,4 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 3000
-  type: ClusterIP
+  type: LoadBalancer
