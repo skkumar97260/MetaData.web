@@ -4,7 +4,7 @@ pipeline {
     tools {
         nodejs "nodejs" // Ensure Node.js is configured in Jenkins
     }
-  
+   
     environment {
       
         FRONTEND_IMAGE = "skkumar97260/sk-frontend"
