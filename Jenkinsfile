@@ -29,13 +29,13 @@ pipeline {
 
         stage('Build Frontend Image') {
             steps {
-                sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} ./frontend"
+                sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} ."
             }
         }
 
         stage('Build Backend Image') {
             steps {
-                sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} ./backend"
+                sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} ."
             }
         }
 
