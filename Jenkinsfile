@@ -21,7 +21,7 @@ pipeline {
                     branches: [[name: '*/main']],
                     userRemoteConfigs: [[
                         credentialsId: 'GITHUB_CREDENTIALS',
-                        url: 'https://github.com/skkumar97260/deploy-demo.git'
+                        url: 'https://github.com/skkumar97260/MetaData.web.git'
                     ]]
                 )
             }
