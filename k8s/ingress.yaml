@@ -15,7 +15,7 @@ metadata:
     alb.ingress.kubernetes.io/success-codes: '200'
     alb.ingress.kubernetes.io/healthy-threshold-count: '3'
     alb.ingress.kubernetes.io/unhealthy-threshold-count: '3'
-    alb.ingress.kubernetes.io/subnets: "subnet-0af953e1e6b57bccd,subnet-01ef1e4073ed088a0"
+    alb.ingress.kubernetes.io/subnets: "subnet-0b214f4e8ff9b5735,subnet-08e80d23cbb9d9954"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
 spec:
   ingressClassName: alb
