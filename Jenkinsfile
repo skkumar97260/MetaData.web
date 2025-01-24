@@ -1,10 +1,10 @@
 pipeline {
     agent any
-                               
+
     tools {
         nodejs "nodejs" // Ensure Node.js is configured in Jenkins
     }
- 
+
     environment {
         FRONTEND_IMAGE = "skkumar97260/sk-frontend"
         BACKEND_IMAGE = "skkumar97260/sk-backend"
@@ -27,23 +27,25 @@ pipeline {
             }
         }
 
-       stage('Build Frontend Image') {
-    steps {
-        script {
-            // Build the Docker image for the frontend located in the 'panel' directory
-            sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -f ./panel/Dockerfile ./panel"
+        stage('Build Frontend Image') {
+            steps {
+                script {
+                    // Build the Docker image for the frontend located in the 'panel' directory
+                    echo "Building Frontend Docker Image..."
+                    sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -f panel/Dockerfile panel"
+                }
+            }
         }
-    }
-}
 
-stage('Build Backend Image') {
-    steps {
-        script {
-            // Build the Docker image for the backend located in the 'backend' directory
-            sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} -f ./backend/Dockerfile ./backend"
+        stage('Build Backend Image') {
+            steps {
+                script {
+                    // Build the Docker image for the backend located in the 'backend' directory
+                    echo "Building Backend Docker Image..."
+                    sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} -f backend/Dockerfile backend"
+                }
+            }
         }
-    }
-}
 
         stage('Push Docker Images') {
             steps {
@@ -52,11 +54,14 @@ stage('Build Backend Image') {
                     usernameVariable: 'DOCKER_USERNAME',
                     passwordVariable: 'DOCKER_PASSWORD'
                 )]) {
-                    sh '''
-                        echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-                        docker push ${FRONTEND_IMAGE}:${DOCKER_TAG}
-                        docker push ${BACKEND_IMAGE}:${DOCKER_TAG}
-                    '''
+                    script {
+                        echo "Pushing Docker Images to DockerHub..."
+                        sh '''
+                            echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+                            docker push ${FRONTEND_IMAGE}:${DOCKER_TAG}
+                            docker push ${BACKEND_IMAGE}:${DOCKER_TAG}
+                        '''
+                    }
                 }
             }
         }
@@ -67,29 +72,31 @@ stage('Build Backend Image') {
                     string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
                     string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
-                    sh '''
-                        export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                        export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                    script {
+                        echo "Deploying to Kubernetes..."
+                        sh '''
+                            export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                            export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
-                        aws eks update-kubeconfig --region ${AWS_REGION} --name ${AWS_CLUSTER_NAME}
+                            # Update the kubeconfig for EKS
+                            aws eks update-kubeconfig --region ${AWS_REGION} --name ${AWS_CLUSTER_NAME}
 
-                        echo "Creating Kubernetes namespace..."
-                        kubectl create namespace ${KUBERNETES_NAMESPACE} || true
+                            # Create Kubernetes namespace if it doesn't exist
+                            kubectl create namespace ${KUBERNETES_NAMESPACE} || true
 
-                        echo "Applying Kubernetes manifests..."
+                            # Apply the Kubernetes manifests with the correct namespace
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-deployment.yaml
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-deployment.yaml
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-service.yaml
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-service.yaml
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/ingress.yaml
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/hpa.yaml
 
-                        # Apply the Kubernetes manifests with the correct namespace
-                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-deployment.yaml
-                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-deployment.yaml
-                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-service.yaml
-                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-service.yaml
-                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/ingress.yaml
-                        kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/hpa.yaml
-
-                        echo "Waiting for deployment to complete..."
-                        kubectl rollout restart deployment/frontend-app -n ${KUBERNETES_NAMESPACE}
-                        kubectl rollout restart deployment/backend-app -n ${KUBERNETES_NAMESPACE}
-                    '''
+                            # Restart deployments to ensure the new images are being used
+                            kubectl rollout restart deployment/frontend-app -n ${KUBERNETES_NAMESPACE}
+                            kubectl rollout restart deployment/backend-app -n ${KUBERNETES_NAMESPACE}
+                        '''
+                    }
                 }
             }
         }
