@@ -27,6 +27,14 @@ pipeline {
             }
         }
 
+        stage('Verify Repository Checkout') {
+            steps {
+                script {
+                    sh 'ls -l' // List files in the root directory to confirm 'panel' and 'backend' exist
+                }
+            }
+        }
+
         stage('Build Frontend Image') {
             steps {
                 script {
