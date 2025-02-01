@@ -72,7 +72,9 @@ mongoose.connect(process.env.MONGODB_URL, { useNewUrlParser: true, useUnifiedTop
   });
 
 app.use('/api', router);
-
+app.get('/', (req, res) => {
+  res.send('Api is working fine !');
+})
 server.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
 });
