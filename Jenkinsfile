@@ -1,6 +1,6 @@
 pipeline {
     agent any
-      
+
     tools {
         nodejs "nodejs" // Ensure Node.js is configured in Jenkins
     }
@@ -17,30 +17,28 @@ pipeline {
     stages {
         stage('GitHub Pull') {
             steps {
-                checkout scmGit(
-                    branches: [[name: '*/main']],
-                    userRemoteConfigs: [[
-                        credentialsId: 'GITHUB_CREDENTIALS',
-                        url: 'https://github.com/skkumar97260/MetaData.web.git'
-                    ]]
-                )
+                echo "Pulling code from GitHub repository..."
+                checkout scm
             }
         }
 
-        stage('Build Frontend Image') {
-            steps {
-                script {
-                    echo "Building Frontend Docker Image..."
-                    sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -f website/Dockerfile website"
+        stage('Build Docker Images') {
+            parallel {
+                stage('Build Frontend Image') {
+                    steps {
+                        script {
+                            echo "Building Frontend Docker Image..."
+                            sh "docker build -t ${FRONTEND_IMAGE}:${DOCKER_TAG} -f website/Dockerfile website"
+                        }
+                    }
                 }
-            }
-        }
-
-        stage('Build Backend Image') {
-            steps {
-                script {
-                    echo "Building Backend Docker Image..."
-                    sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} -f backend/Dockerfile backend"
+                stage('Build Backend Image') {
+                    steps {
+                        script {
+                            echo "Building Backend Docker Image..."
+                            sh "docker build -t ${BACKEND_IMAGE}:${DOCKER_TAG} -f backend/Dockerfile backend"
+                        }
+                    }
                 }
             }
         }
@@ -80,9 +78,18 @@ pipeline {
                             aws eks update-kubeconfig --region ${AWS_REGION} --name ${AWS_CLUSTER_NAME}
 
                             # Create Kubernetes namespace if it doesn't exist
-                            kubectl create namespace ${KUBERNETES_NAMESPACE} || true
+                            kubectl apply -f - <<EOF
+                            apiVersion: v1
+                            kind: Namespace
+                            metadata:
+                              name: ${KUBERNETES_NAMESPACE}
+                            EOF
 
-                            # Apply the Kubernetes manifests with the correct namespace
+                            # Apply Kubernetes manifests
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-secret.yaml
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-secret.yaml
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-configmap.yaml
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-configmap.yaml
                             kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-deployment.yaml
                             kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-deployment.yaml
                             kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-service.yaml
