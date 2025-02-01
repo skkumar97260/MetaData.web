@@ -42,11 +42,11 @@ spec:
             httpGet:
               path: /  # This should be an endpoint that is always available
               port: 3000
-            initialDelaySeconds: 5
+            initialDelaySeconds: 100
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /  # This should be an endpoint that returns 200 when the app is ready
               port: 3000
-            initialDelaySeconds: 5
+            initialDelaySeconds: 70
             periodSeconds: 10
