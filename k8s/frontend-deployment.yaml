@@ -25,28 +25,28 @@ spec:
           image: skkumar97260/sk-frontend:latest
           imagePullPolicy: Always
           ports:
-            - containerPort: 3000
+            - containerPort: 3000  # Ensure your application listens on port 3000
           resources:
             requests:
-              cpu: "100m"
-              memory: "524Mi"
-          limits:
-              cpu: "150m"
-              memory: "1024Mi"
+              cpu: "100m"  # 0.1 CPU core requested
+              memory: "524Mi"  # 524 MB of memory requested
+            limits:
+              cpu: "150m"  # 0.15 CPU core limit
+              memory: "1024Mi"  # 1 GB memory limit
           envFrom:
             - secretRef:
-                name: frontend-secrets 
+                name: frontend-secrets  # Ensure this Secret exists in the namespace
             - configMapRef:
-                name: frontend-configmap
+                name: frontend-configmap  # Ensure this ConfigMap exists in the namespace
           livenessProbe:
             httpGet:
-              path: /
+              path: /  # This should be an endpoint that is always available
               port: 3000
             initialDelaySeconds: 5
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /
+              path: /  # This should be an endpoint that returns 200 when the app is ready
               port: 3000
             initialDelaySeconds: 5
             periodSeconds: 10
