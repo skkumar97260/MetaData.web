@@ -33,6 +33,9 @@ spec:
             limits:
               memory: "256Mi"
               cpu: "500m"
+          envFrom:
+            - secretRef:
+                name: backend-secrets  # Ensure this is defined if using secrets
           livenessProbe:
             httpGet:
               path: /
