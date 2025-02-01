@@ -28,25 +28,25 @@ spec:
             - containerPort: 5000
           resources:
             requests:
-             cpu: "150m"
-             memory: "1024Mi"
+              cpu: "150m"        # Requesting 150 milli-CPU
+              memory: "1024Mi"   # Requesting 1024 MiB (1 GB) of memory
             limits:
-             cpu: "250m"
-            memory: "1024Mi"
+              cpu: "250m"        # Limiting CPU usage to 250 milli-CPU
+              memory: "1024Mi"   # Limiting memory usage to 1024 MiB (1 GB)
           envFrom:
             - secretRef:
-                name: backend-secrets 
+                name: backend-secrets  # Ensure 'backend-secrets' exists in the namespace
             - configMapRef:
-                name: backend-configmap
+                name: backend-configmap  # Ensure 'backend-configmap' exists in the namespace
           livenessProbe:
             httpGet:
-              path: /
+              path: /  # Adjust if your app's health check path is different
               port: 5000
             initialDelaySeconds: 5
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /
+              path: /  # Adjust if your app's readiness check path is different
               port: 5000
             initialDelaySeconds: 5
             periodSeconds: 10
