@@ -28,11 +28,11 @@ spec:
             - containerPort: 3000
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "250m"
-            limits:
-              memory: "256Mi"
-              cpu: "500m"
+              cpu: "100m"
+              memory: "524Mi"
+          limits:
+              cpu: "150m"
+              memory: "1024Mi"
           envFrom:
             - secretRef:
                 name: frontend-secrets 
