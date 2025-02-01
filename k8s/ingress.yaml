@@ -20,7 +20,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: ""
+    - host: frontend.example.com  # This will match traffic for this domain
       http:
         paths:
           - path: /
@@ -30,6 +30,9 @@ spec:
                 name: frontend
                 port:
                   number: 80
+    - host: backend.example.com  # This will match traffic for this domain
+      http:
+        paths:
           - path: /api
             pathType: Prefix
             backend:
