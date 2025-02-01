@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: frontend-configmap
+  name: backend-configmap
   namespace: mern-namespace
 data:
   BASIC_AUTH_USERNAME: "sivakumar"
