@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-configmap
+  namespace: mern-namespace
+data:
+  BASIC_AUTH_USERNAME: "sivakumar"
+  BASIC_AUTH_PASSWORD: "Sk@279200"
+  SECRET_KEY: "sk@279200"
+  MONGODB_URL: "mongodb+srv://sivakumar:Sk%40279200@sk.8ymb69m.mongodb.net/Metadata"
+  PORT: "5000"
+
+
+

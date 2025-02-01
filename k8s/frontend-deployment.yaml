@@ -35,7 +35,9 @@ spec:
               cpu: "500m"
           envFrom:
             - secretRef:
-                name: frontend-secrets
+                name: frontend-secrets 
+            - configMapRef:
+                name: frontend-configmap
           livenessProbe:
             httpGet:
               path: /

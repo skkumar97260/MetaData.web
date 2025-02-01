@@ -35,7 +35,9 @@ spec:
               cpu: "500m"
           envFrom:
             - secretRef:
-                name: backend-secrets  # Ensure this is defined if using secrets
+                name: backend-secrets 
+            - configMapRef:
+                name: backend-configmap
           livenessProbe:
             httpGet:
               path: /
