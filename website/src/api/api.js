@@ -1,7 +1,7 @@
 import axios from "axios";
 import { clearStorage } from "../utils/Storage";
 
-const API = axios.create({ baseURL: "http://localhost:5000/api/" });
+const API = axios.create({ baseURL: "http://a0490b0f25a3045ccbd7cf3712b7c0e9-325173303.us-east-1.elb.amazonaws.com/api/" });
 
 API.interceptors.request.use(
   (request) => {
