@@ -33,7 +33,7 @@ spec:
     - host: backend.example.com  # This will match traffic for this domain
       http:
         paths:
-          - path: /api
+          - path: /
             pathType: Prefix
             backend:
               service:

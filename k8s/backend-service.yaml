@@ -4,9 +4,11 @@ metadata:
   name: backend
   namespace: mern-namespace
 spec:
+type: LoadBalancer
   selector:
     app: backend
   ports:
-    - port: 80          # The port exposed by the service
-      targetPort: 5000   # The port on the backend pod
+      port: 80
+      targetPort: 5000
 
+  
