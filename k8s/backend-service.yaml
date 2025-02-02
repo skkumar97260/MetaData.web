@@ -9,4 +9,4 @@ spec:
   ports:
     - port: 80          # The port exposed by the service
       targetPort: 5000   # The port on the backend pod
-  type: ClusterIP       # This ensures it’s only accessible within the cluster
+
