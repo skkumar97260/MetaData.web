@@ -83,10 +83,8 @@ pipeline {
                             kubectl create namespace ${KUBERNETES_NAMESPACE} || true
 
                             # Apply the Kubernetes manifests with the correct namespace
-                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-secret.yaml
-                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-secret.yaml
-                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-configmap.yaml
-                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-configmap.yaml
+                           kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/configmap.yaml
+                            kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/secrets.yaml
                             kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-deployment.yaml
                             kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/backend-deployment.yaml
                             kubectl apply -n ${KUBERNETES_NAMESPACE} -f k8s/frontend-service.yaml

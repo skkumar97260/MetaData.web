@@ -35,9 +35,9 @@ spec:
               memory: "1024Mi"   # Limiting memory usage to 1024 MiB (1 GB)
           envFrom:
             - secretRef:
-                name: backend-secrets  # Ensure 'backend-secrets' exists in the namespace
+                name: app-secrets  # Ensure this Secret exists in the namespace
             - configMapRef:
-                name: backend-configmap  # Ensure 'backend-configmap' exists in the namespace
+                name: app-configmap  # Ensure this ConfigMap exists in the namespace
           livenessProbe:
             httpGet:
               path: /  # Adjust if your app's health check path is different
