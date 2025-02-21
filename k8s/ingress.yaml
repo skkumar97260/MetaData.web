@@ -21,7 +21,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: pixalivetech.com  # This will match traffic for this domain
+    - host: pixalivetech.com
       http:
         paths:
           - path: /
@@ -31,10 +31,7 @@ spec:
                 name: frontend
                 port:
                   number: 80
-    - host: pixalivetech.com  # This will match traffic for this domain
-      http:
-        paths:
-          - path: /
+          - path: /api  # Backend should have a separate path
             pathType: Prefix
             backend:
               service:
