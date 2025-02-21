@@ -16,11 +16,12 @@ metadata:
     alb.ingress.kubernetes.io/healthy-threshold-count: '3'
     alb.ingress.kubernetes.io/unhealthy-threshold-count: '3'
     alb.ingress.kubernetes.io/subnets: "subnet-071841d8616d72fc5,subnet-0b1c2a66bc322ca82"
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:241533137992:certificate/11f947fe-d73d-4bcb-91e6-4d387ed818a4"
 spec:
   ingressClassName: alb
   rules:
-    - host: frontend.example.com  # This will match traffic for this domain
+    - host: pixalivetech.com  # This will match traffic for this domain
       http:
         paths:
           - path: /
@@ -30,7 +31,7 @@ spec:
                 name: frontend
                 port:
                   number: 80
-    - host: backend.example.com  # This will match traffic for this domain
+    - host: pixalivetech.com  # This will match traffic for this domain
       http:
         paths:
           - path: /
