@@ -4,11 +4,10 @@ metadata:
   name: frontend
   namespace: kube-system
 spec:
-  selector:  # ✅ Corrected indentation
-    app: frontend
   type: LoadBalancer
+  selector:
+    app: frontend
   ports:
-    - name: http  # ✅ Recommended for multiple ports
       protocol: TCP
       port: 80
       targetPort: 3000

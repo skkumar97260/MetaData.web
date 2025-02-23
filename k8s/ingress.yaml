@@ -2,21 +2,24 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mern-ingress
-  namespace: kube-system  # Consider moving to "default" or another namespace
+  namespace: kube-system  # ⚠️ Consider using "default" or another namespace
   annotations:
     kubernetes.io/ingress.class: "alb"
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/load-balancer-name: "mern-alb"
+    alb.ingress.kubernetes.io/tags: "kubernetes.io/cluster/${CLUSTER_NAME}"  # 🛠️ Fixed indentation issue
     alb.ingress.kubernetes.io/scheme: "internet-facing"
     alb.ingress.kubernetes.io/target-type: "ip"
-    alb.ingress.kubernetes.io/healthcheck-port: "80"
-    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"  # Standard value
-    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "5"   # Standard value
+    alb.ingress.kubernetes.io/healthcheck-port: "traffic-port"  # ✅ Use "traffic-port" instead of "80"
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "5"
     alb.ingress.kubernetes.io/healthcheck-path: "/"
     alb.ingress.kubernetes.io/success-codes: "200"
     alb.ingress.kubernetes.io/healthy-threshold-count: "3"
     alb.ingress.kubernetes.io/unhealthy-threshold-count: "3"
     alb.ingress.kubernetes.io/subnets: "subnet-0eb49d0e939a675e0,subnet-0b8afd2b66adcdf52"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "StatusCode": "HTTP_301"}}'
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:241533137992:certificate/11f947fe-d73d-4bcb-91e6-4d387ed818a4"
 spec:
   ingressClassName: alb
@@ -30,11 +33,11 @@ spec:
               service:
                 name: frontend
                 port:
-                  number: 80
+                  number: 80  # ✅ Ensure your frontend service is exposed on port 80
           - path: /api
             pathType: Prefix
             backend:
               service:
                 name: backend
                 port:
-                  number: 5000  # ✅ Make sure backend service uses port 5000
+                  number: 5000  # ✅ Ensure your backend service is exposed on port 5000

@@ -7,7 +7,6 @@ spec:
   selector:
     app: backend
   ports:
-    - name: http  # ✅ Required for multiple ports
       protocol: TCP
       port: 5000
       targetPort: 5000
