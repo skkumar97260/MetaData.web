@@ -28,11 +28,11 @@ spec:
             - containerPort: 5000
           resources:
             requests:
-              cpu: "150m"        # Requesting 150 milli-CPU
+              cpu: "250m"        # Requesting 150 milli-CPU
               memory: "1024Mi"   # Requesting 1024 MiB (1 GB) of memory
             limits:
-              cpu: "250m"        # Limiting CPU usage to 250 milli-CPU
-              memory: "1024Mi"   # Limiting memory usage to 1024 MiB (1 GB)
+              cpu: "500m"        # Limiting CPU usage to 250 milli-CPU
+              memory: "2048Mi"   # Limiting memory usage to 1024 MiB (1 GB)
           envFrom:
             - secretRef:
                 name: app-secrets  # Ensure this Secret exists in the namespace

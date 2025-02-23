@@ -2,19 +2,19 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mern-ingress
-  namespace: kube-system
+  namespace: kube-system  # Consider moving to "default" or another namespace
   annotations:
     kubernetes.io/ingress.class: "alb"
-    alb.ingress.kubernetes.io/load-balancer-name: mern-alb
-    alb.ingress.kubernetes.io/scheme: internet-facing
-    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/load-balancer-name: "mern-alb"
+    alb.ingress.kubernetes.io/scheme: "internet-facing"
+    alb.ingress.kubernetes.io/target-type: "ip"
     alb.ingress.kubernetes.io/healthcheck-port: "80"
-    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '43'
-    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '40'
-    alb.ingress.kubernetes.io/healthcheck-path: /
-    alb.ingress.kubernetes.io/success-codes: '200'
-    alb.ingress.kubernetes.io/healthy-threshold-count: '3'
-    alb.ingress.kubernetes.io/unhealthy-threshold-count: '3'
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"  # Standard value
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "5"   # Standard value
+    alb.ingress.kubernetes.io/healthcheck-path: "/"
+    alb.ingress.kubernetes.io/success-codes: "200"
+    alb.ingress.kubernetes.io/healthy-threshold-count: "3"
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: "3"
     alb.ingress.kubernetes.io/subnets: "subnet-0eb49d0e939a675e0,subnet-0b8afd2b66adcdf52"
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/certificate-arn: "arn:aws:acm:us-east-1:241533137992:certificate/11f947fe-d73d-4bcb-91e6-4d387ed818a4"
@@ -31,10 +31,10 @@ spec:
                 name: frontend
                 port:
                   number: 80
-          - path: /api  # Backend should have a separate path
+          - path: /api
             pathType: Prefix
             backend:
               service:
                 name: backend
                 port:
-                  number: 80
+                  number: 5000  # ✅ Make sure backend service uses port 5000

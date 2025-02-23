@@ -7,7 +7,8 @@ spec:
   selector:
     app: backend
   ports:
-    - protocol: TCP
-    - port: 80
+    - name: http  # ✅ Required for multiple ports
+      protocol: TCP
+      port: 80
       targetPort: 5000
   type: ClusterIP
