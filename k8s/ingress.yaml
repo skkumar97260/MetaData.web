@@ -2,7 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: mern-ingress
-  namespace: kube-system  
+  namespace: kube-system
+  annotations:
     kubernetes.io/ingress.class: "alb"
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/load-balancer-name: "mern-alb"
@@ -32,11 +33,11 @@ spec:
               service:
                 name: frontend
                 port:
-                  number: 80  # ✅ Ensure your frontend service is exposed on port 80
+                  number: 80
           - path: /api
             pathType: Prefix
             backend:
               service:
                 name: backend
                 port:
-                  number: 5000  # ✅ Ensure your backend service is exposed on port 5000
+                  number: 5000
