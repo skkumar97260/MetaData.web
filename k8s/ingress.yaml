@@ -5,9 +5,9 @@ metadata:
   namespace: kube-system
   annotations:
     kubernetes.io/ingress.class: "alb"
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
+    # alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/load-balancer-name: "mern-alb"
-    alb.ingress.kubernetes.io/tags: "kubernetes.io/cluster/${CLUSTER_NAME}"  
+    alb.ingress.kubernetes.io/tags: Name=my-eks-cluster
     alb.ingress.kubernetes.io/scheme: "internet-facing"
     alb.ingress.kubernetes.io/target-type: "ip"
     alb.ingress.kubernetes.io/healthcheck-port: "traffic-port" 
