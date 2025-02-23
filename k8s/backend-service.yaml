@@ -4,10 +4,10 @@ metadata:
   name: backend
   namespace: kube-system
 spec:
+  type: ClusterIP
   selector:
     app: backend
   ports:
-      protocol: TCP
+    - protocol: TCP
       port: 5000
       targetPort: 5000
-  type: ClusterIP
