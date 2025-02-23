@@ -9,9 +9,9 @@ pipeline {
         FRONTEND_IMAGE = "skkumar97260/sk-frontend"
         BACKEND_IMAGE = "skkumar97260/sk-backend"
         DOCKER_TAG = "latest"
-        AWS_CLUSTER_NAME = "my-eks-cluster-2"
+        AWS_CLUSTER_NAME = "my-eks-cluster"
         AWS_REGION = "us-east-1"
-        KUBERNETES_NAMESPACE = "mern-namespace"
+        KUBERNETES_NAMESPACE = "kube-system"
     }
 
     stages {
@@ -110,7 +110,9 @@ pipeline {
             echo 'Pipeline executed successfully.'
         }
         failure {
-            echo 'Pipeline execution failed.'
+             echo 'Pipeline execution failed.'
+            sh 'kubectl rollout undo deployment/frontend -n ${KUBERNETES_NAMESPACE}'
+            sh 'kubectl rollout undo deployment/backend -n ${KUBERNETES_NAMESPACE}'
         }
     }
 }

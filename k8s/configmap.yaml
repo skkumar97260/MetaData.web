@@ -2,6 +2,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: app-configmap
-  namespace: mern-namespace
+  namespace: kube-system
 data:
   PORT: "5000"  # Non-sensitive config (Safe to keep in ConfigMap)
