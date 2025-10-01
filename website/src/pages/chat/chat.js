@@ -128,7 +128,8 @@ const Chat = () => {
    
   }, [messages]);
   useEffect(() => {
-    const socket = io("http://a0490b0f25a3045ccbd7cf3712b7c0e9-325173303.us-east-1.elb.amazonaws.com/"); // Adjust the URL
+    // const socket = io("http://a0490b0f25a3045ccbd7cf3712b7c0e9-325173303.us-east-1.elb.amazonaws.com/"); // Adjust the URL
+        const socket = io("http://localhost:5000/"); 
     setSocket(socket);
   
     socket.emit('new-users-add', currentUserId);

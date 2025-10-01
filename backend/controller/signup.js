@@ -6,7 +6,7 @@ exports.createUser = async (req, res) => {
     
     try {
         // Check if the user already exists
-        const existingUser = await User.findOne({ phoneNumber }); 
+        const existingUser = await User.findOne({ email}); 
         if (existingUser) {
             return res.status(400).json({ message: "User already exists" });
         }
@@ -19,7 +19,7 @@ exports.createUser = async (req, res) => {
         await user.save();
         
         // Send the OTP using the sendOtp function
-        const otpResponse = await sendOtp(phoneNumber, otp);
+        const otpResponse = await sendOtp(email, otp);
         
         return res.status(200).json({  result: user,  message: "User created successfully. OTP sent.", otpResponse  });
         
@@ -29,9 +29,9 @@ exports.createUser = async (req, res) => {
 }
 
 exports.verifyOtp = async (req, res) => {
-    const { phoneNumber, otp } = req.body;
+    const { email, otp } = req.body;
     try {
-        const user = await User.findOne({ phoneNumber });
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ message: "User not found" });
         }

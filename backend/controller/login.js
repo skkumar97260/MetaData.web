@@ -2,21 +2,22 @@ const User= require('../model/user');
 const {sendOtp}=require('../middleware/commonResponseHandler');
 const crypto = require('crypto');
 const { createJwtToken } = require('../middleware/tokenManager');
+const e = require('express');
 require('dotenv').config();
 exports.login = async(req,res)=>{
-     const {phoneNumber}=req.body;
+     const {email}=req.body;
      try{
-        const userFound= await User.findOne({phoneNumber});
+        const userFound= await User.findOne({email});
         if(!userFound){
             return res.status(400).json({message:"User not found"});
         }
-        const otp= crypto.randomInt(10000, 99999).toString();
+        const otp= crypto.randomInt(10000, 99999).toString() ;
         const user = await User.findOneAndUpdate(
-            { phoneNumber }, // Find the user by phone number
-            { otp: otp }, // Update the OTP
+            { email: email }, // Find the user by phone number
+            { otp: otp  }, // Update the OTP
             { new: true } // Return the updated document
         );
-        const otpResponse= await sendOtp(phoneNumber,otp);  
+        const otpResponse= await sendOtp(email,otp);  
         return res.status(200).json({result:user,message:"OTP sent successfully",otpResponse});
         
     }
@@ -27,9 +28,9 @@ exports.login = async(req,res)=>{
 }
 
 exports.verifyOtp= async(req,res)=>{
-    const {phoneNumber,otp}=req.body;
+    const {email,otp}=req.body;
     try{
-        const user= await User.findOne({phoneNumber:phoneNumber});
+        const user= await User.findOne({email:email});
         if(!user){
             return res.status(400).json({message:"User not found"});
         }
@@ -38,7 +39,7 @@ exports.verifyOtp= async(req,res)=>{
         }
         user.otp=null;
         await user.save();
-        const token = createJwtToken({userId:user._id,phoneNumber:user.phoneNumber},process.env.SECRET_KEY);
+        const token = createJwtToken({userId:user._id,email:user.email},process.env.SECRET_KEY);
         if(!token)
         {
            res.status(500).json({message:"Token generation failed"}); 

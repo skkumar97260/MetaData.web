@@ -8,11 +8,11 @@ import { loginuser,verifyOtp } from "../../api/login";
 const Login = () => {
     const navigate = useNavigate();
     const initialStateInputs = {
-        phoneNumber: "",
+        email: "",
         otp: "",
     };
     const initialStateErrors = {
-        phoneNumber: { required: false, valid: true },
+        email: { required: false, valid: true },
         otp: { required: false, valid: true },
     };
     const [inputs, setInputs] = useState(initialStateInputs);
@@ -36,9 +36,9 @@ const Login = () => {
 
     const handleValidation = (data) => {
         const newErrors = { ...initialStateErrors };
-        if (data.phoneNumber === "") {
-            newErrors.phoneNumber.required = true;
-            newErrors.phoneNumber.valid = false;
+        if (data.email === "") {
+            newErrors.email.required = true;
+            newErrors.email.valid = false;
         }
         if (data.otp === "" && otpSent) {
             newErrors.otp.required = true;
@@ -77,7 +77,7 @@ const Login = () => {
         setErrors(newErrors);
         if (handleErrors(newErrors)) {
             const data = {
-                phoneNumber: inputs.phoneNumber,
+                email: inputs.email,
                 otp: inputs.otp,
             };
             verifyOtp(data)
@@ -130,17 +130,17 @@ const Login = () => {
                         <h1 className="text-3xl font-bold text-center mb-6 text-indigo-600">Login</h1>
                         <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-1">
-                                <label className="text-lg font-medium" htmlFor="phoneNumber">Mobile Number</label>
+                                <label className="text-lg font-medium" htmlFor="email">Email</label>
                                 <input
                                     type="text"
-                                    placeholder="Enter your mobile number"
-                                    name="phoneNumber"
-                                    value={inputs.phoneNumber}
+                                    placeholder="Enter your email"
+                                    name="email"
+                                    value={inputs.email}
                                     onChange={handleInputs}
                                     className="input input-bordered w-full"
                                     required
                                 />
-                                {errors.phoneNumber.required && (
+                                {errors.email.required && (
                                     <span className="text-danger form-text">Mobile number is required</span>
                                 )}
                             </div>

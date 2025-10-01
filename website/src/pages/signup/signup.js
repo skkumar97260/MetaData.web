@@ -92,7 +92,7 @@ const Signup = () => {
         setErrors(newErrors);
         if (handleErrors(newErrors)) {
             const data = {
-                phoneNumber: inputs.phoneNumber,
+                email: inputs.email,
                 otp: inputs.otp,
             };
             verifyOtp(data)
